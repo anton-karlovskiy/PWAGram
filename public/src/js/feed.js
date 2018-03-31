@@ -20,6 +20,15 @@ function openCreatePostModal() {
 
     deferredPrompt = null;
   }
+  // unregister service worker example
+  // if ('serviceWorker' in navigator) {
+  //   navigator.serviceWorker.getRegistrations()
+  //     .then(registrations => {
+  //       for(let i = 0; i < registrations.length; i++) {
+  //         registrations[i].unregister();
+  //       }
+  //     })
+  // }
 }
 
 function closeCreatePostModal() {
@@ -78,7 +87,16 @@ function createCard() {
 const url = 'https://httpbin.org/get';
 var networkDataReceived = false;
 
-fetch(url)
+fetch(url, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  },
+  body: JSON.stringify({
+    message: 'Some message'
+  })
+})
   .then(function(res) {
     return res.json();
   })
