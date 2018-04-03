@@ -98,7 +98,7 @@ function isInArray(string, array) {
 
 // Alternative cache with network fallback
 self.addEventListener('fetch', function(event) {
-  var url = 'https://httpbin.org/get';
+  var url = 'https://pwagram-f2499.firebaseio.com/posts.json';
   var staticAssets = []
   if(event.request.url.indexOf(url) > -1) {
     // Cache then network
@@ -117,7 +117,7 @@ self.addEventListener('fetch', function(event) {
   // Cache only
   else if(isInArray(event.request.url, STATIC_FILES)) {
     event.respondWith(
-      caches.match(event.request)
+      caches.match(event.request.url)
     );
   }
   else {
