@@ -1,6 +1,6 @@
 importScripts('/src/js/idb.js');
 
-var CACHE_STATIC_NAME = 'static-v6';
+var CACHE_STATIC_NAME = 'static-v7';
 var CACHE_DYNAMIC_NAME = 'dynamic-v2';
 var STATIC_FILES = [
   '/',
@@ -121,7 +121,7 @@ self.addEventListener('fetch', function(event) {
                   .then(db => {
                     let tx = db.transaction('posts', 'readwrite');
                     let store = tx.objectStore('posts');
-                    store.put(key, data[key]);
+                    store.put(data[key]);
                     return tx.complete;
                   });
               }
@@ -132,9 +132,15 @@ self.addEventListener('fetch', function(event) {
   }
   // Cache only
   else if(isInArray(event.request.url, STATIC_FILES)) {
-    event.respondWith(
-      caches.match(event.request.url)
-    );
+    try {
+      event.respondWith(
+        caches.match(event.request.url)
+      );
+    }
+    catch(error) {
+      console.log('caught');
+    }
+    
   }
   else {
     // Cache with network fallback
