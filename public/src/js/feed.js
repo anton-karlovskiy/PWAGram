@@ -2,6 +2,9 @@ var shareImageButton = document.querySelector('#share-image-button');
 var createPostArea = document.querySelector('#create-post');
 var closeCreatePostModalButton = document.querySelector('#close-create-post-modal-btn');
 var sharedMomentsArea = document.querySelector('#shared-moments');
+var form = document.querySelector('form');
+var titleInput = document.querySelector('#title');
+var locationInput = document.querySelector('#location');
 
 function openCreatePostModal() {
     createPostArea.style.transform = 'translateY(0)';
@@ -112,22 +115,88 @@ fetch(url)
     updateUI(dataArray);
   });
 
-if('caches' in window) {
-  caches.match(url)
-    .then(response => {
-      if (response) {
-        return response.json();
+// if('caches' in window) {
+//   caches.match(url)
+//     .then(response => {
+//       if (response) {
+//         return response.json();
+//       }
+//     })
+//     .then(data => {
+//       console.log('From cache', data);
+//       if(!networkDataReceived) {
+//         let dataArray = [];
+//         for(var key in data) {
+//           dataArray.push(data[key]);
+//         }
+//         updateUI(dataArray);
+//       }
+//     })
+// }
+if ('indexedDB' in window) {
+  readAllData('posts')
+    .then(function(data) {
+      if (!networkDataReceived) {
+        console.log('From cache', data);
+        updateUI(data);
       }
-    })
-    .then(data => {
-      console.log('From cache', data);
-      if(!networkDataReceived) {
-        let dataArray = [];
-        for(var key in data) {
-          dataArray.push(data[key]);
-        }
-        updateUI(dataArray);
-      }
-    })
+    });
 }
 
+function sendData() {
+  const url = 'https://pwagram-f2499.firebaseio.com/posts.json';
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: {
+      id: new Date().toISOString(),
+      title: titleInput.value,
+      location: locationInput.value,
+      image: "https://firebasestorage.googleapis.com/v0/b/pwagram-f2499.appspot.com/o/sf-boat.jpg?alt=media&token=b131ed43-df82-4cb5-a297-8f288e9b161a"
+    }
+  })
+  .then(res => {
+    console.log('Sent data', res);
+    // updateUI();
+  })
+}
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  if(titleInput.value.trim() === '' || locationInput.value.trim() === '') {
+    alert('Please enter title/location');
+    return;
+  }
+
+  closeCreatePostModal();
+
+  if('ServiceWorker' in window && 'SyncManager' in window) {
+    navigator.serviceWorker.ready
+      .then(sw => {
+        var post = {
+          id: new Date().toISOString(),
+          title: titleInput.value,
+          location: locationInput.value
+        };
+        writeData('sync-posts', post)
+          .then(() => {
+            return sw.sync.register('sync-new-posts');
+          })
+          .then(() => {
+            var snackbarContainer = document.querySelector('#confirmation-toast');
+            var data = {message: 'Post was saved for syncing'};
+            snackbarContainer.MaterialSnackbar.showSnackbar(data);
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      });
+  }
+  else {
+    sendData();
+  }
+});
