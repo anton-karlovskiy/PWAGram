@@ -144,7 +144,7 @@ if ('indexedDB' in window) {
 }
 
 function sendData() {
-  const url = 'https://pwagram-f2499.firebaseio.com/posts.json';
+  const url = 'https://us-central1-pwagram-f2499.cloudfunctions.net/storePostData';
   fetch(url, {
     method: 'POST',
     headers: {
@@ -160,7 +160,7 @@ function sendData() {
   })
   .then(res => {
     console.log('Sent data', res);
-    // updateUI();
+    updateUI();
   })
 }
 

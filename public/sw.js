@@ -213,7 +213,7 @@ self.addEventListener('sync', (e) => {
     e.waitUntil(
       readAllData('sync-posts')
         .then(data => {
-          const url = 'https://pwagram-f2499.firebaseio.com/posts.json';
+          const url = 'https://us-central1-pwagram-f2499.cloudfunctions.net/storePostData';
           for(let dt of data) {
             fetch(url, {
               method: 'POST',
@@ -231,7 +231,10 @@ self.addEventListener('sync', (e) => {
             .then(res => {
               console.log('Sent data', res);
               if(res.ok) {
-                deleteItemFromData('sync-posts', dt.id);
+                res.json()
+                  .then(resData => {
+                    deleteItemFromData('sync-posts', resData.id);
+                  })
               }
             })
             .catch(err => console.log('Error while sending data', err));
