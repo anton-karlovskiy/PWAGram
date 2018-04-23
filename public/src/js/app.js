@@ -49,11 +49,11 @@ const displayConfirmNotification = () => {
 }
 
 configurePushSub = () => {
-  if(!('serviceWorker' in navigatore)) {
+  if(!('serviceWorker' in navigator)) {
     return;
   }
 
-  const swreg;
+  var swreg;
   navigator.serviceWorker.ready
     .then(_swreg => { // Service Worker Registration
       swreg = _swreg;
@@ -62,13 +62,35 @@ configurePushSub = () => {
     .then(sub => {
       if(sub === null) {
         // Create new subscription
-        reg.pushMangager.subscribe({
-          userVisibleOnly: true
+        const vapidPublicKey = "BFb-s1IckXJ9y9gjfNbLiX-bP4VG_A0-LwusyBiezvdV9bk_4Q9Fi5YKsZL3P09yvMEj_zdOOr7dYlrYRWHOsOc";
+        const convertedVapidPublicKey = urlBase64ToUint8Array(vapidPublicKey);
+
+        return swreg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: convertedVapidPublicKey
         });
       }
       else {
         // We have a subscription
       }
+    })
+    .then(newSub => {
+      return fetch('https://pwagram-f2499.firebaseio.com/subscriptions.json', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(newSub)
+      });
+    })
+    .then(res => {
+      if(res.ok) {
+        displayConfirmNotification();
+      }
+    })
+    .catch(err => {
+      console.log(err)
     });
 }
 
