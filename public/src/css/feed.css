@@ -61,6 +61,6 @@
 
 @media (min-height: 1000px) {
   .shared-moment-card .mdl-card__title  {
-    width: 200px;
+    height: 200px;
   }
 }

@@ -1,10 +1,10 @@
-var shareImageButton = document.querySelector('#share-image-button');
-var createPostArea = document.querySelector('#create-post');
-var closeCreatePostModalButton = document.querySelector('#close-create-post-modal-btn');
-var sharedMomentsArea = document.querySelector('#shared-moments');
-var form = document.querySelector('form');
-var titleInput = document.querySelector('#title');
-var locationInput = document.querySelector('#location');
+const shareImageButton = document.querySelector('#share-image-button');
+const createPostArea = document.querySelector('#create-post');
+const closeCreatePostModalButton = document.querySelector('#close-create-post-modal-btn');
+const sharedMomentsArea = document.querySelector('#shared-moments');
+const form = document.querySelector('form');
+const titleInput = document.querySelector('#title');
+const locationInput = document.querySelector('#location');
 
 function openCreatePostModal() {
     createPostArea.style.transform = 'translateY(0)';

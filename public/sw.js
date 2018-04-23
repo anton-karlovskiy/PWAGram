@@ -109,7 +109,7 @@ function isInArray(string, array) {
 
 // Alternative cache with network fallback
 self.addEventListener('fetch', function(event) {
-  var url = 'https://pwagram-f2499.firebaseio.com/posts.json';
+  var url = 'https://pwagram-f2499.firebaseio.com/posts';
   if(event.request.url.indexOf(url) > -1) {
     // Cache then network
     event.respondWith(
@@ -242,4 +242,24 @@ self.addEventListener('sync', (e) => {
         })
     )
   }
+});
+
+self.addEventListener('notificationclick', e => {
+  const notification = e.notification;
+  const action = e.action;
+
+  console.log(notification);
+
+  if(action === 'confirm') {
+    console.log('Confirm was chosen');
+    notification.close();
+  }
+  else {
+    console.log(action);
+    notification.close();
+  }
+});
+
+self.addEventListener('notificationclose', e => {
+  console.log('Notification was closed', e);
 });
