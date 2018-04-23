@@ -48,6 +48,29 @@ const displayConfirmNotification = () => {
   }
 }
 
+configurePushSub = () => {
+  if(!('serviceWorker' in navigatore)) {
+    return;
+  }
+
+  const swreg;
+  navigator.serviceWorker.ready
+    .then(_swreg => { // Service Worker Registration
+      swreg = _swreg;
+      return swreg.pushManager.getSubscription();
+    })
+    .then(sub => {
+      if(sub === null) {
+        // Create new subscription
+        reg.pushMangager.subscribe({
+          userVisibleOnly: true
+        });
+      }
+      else {
+        // We have a subscription
+      }
+    });
+}
 
 const askForNotificationPermission = () => {
   Notification.requestPermission(result => {
@@ -56,7 +79,8 @@ const askForNotificationPermission = () => {
       console.log('No notification permission granted!');
     }
     else {
-      displayConfirmNotification();
+      // displayConfirmNotification();
+      configurePushSub();
     }
   })
 };
