@@ -256,6 +256,23 @@ self.addEventListener('notificationclick', e => {
   }
   else {
     console.log(action);
+    e.waitUntil(
+      clients.matchAll()
+        .then(_clients => {
+          const client = _clients.find(c => {
+            return c.visibility === 'visible';
+          });
+
+          if(client !== undefined) {
+            client.navigate('http://localhost:8080');
+            client.focus;
+          }
+          else {
+            clients.openWindow('http://localhost:8080')
+          }
+          notification.close();
+        })
+    )
     notification.close();
   }
 });
