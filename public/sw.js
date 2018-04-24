@@ -264,11 +264,11 @@ self.addEventListener('notificationclick', e => {
           });
 
           if(client !== undefined) {
-            client.navigate('http://localhost:8080');
+            client.navigate(notification.data.url);
             client.focus;
           }
           else {
-            clients.openWindow('http://localhost:8080')
+            clients.openWindow(notification.data.url)
           }
           notification.close();
         })
@@ -284,7 +284,8 @@ self.addEventListener('notificationclose', e => {
 self.addEventListener('push', e => {
   console.log('push notification received', e);
 
-  let data = {title: 'New', content: 'Something new happened'};
+  let data = {title: 'New', content: 'Something new happened', openUrl: '/'};
+
   if(e.data) {
     data = JSON.parse(e.data.text());
   }
@@ -292,7 +293,10 @@ self.addEventListener('push', e => {
   const options = {
     body: data.content,
     icon: '/src/images/icons/app-icon-96x96.png',
-    badge: '/src/images/icons/app-icon-96x96.png'
+    badge: '/src/images/icons/app-icon-96x96.png',
+    data: {
+      url: data.openUrl
+    }
   }
 
   e.waitUntil(
