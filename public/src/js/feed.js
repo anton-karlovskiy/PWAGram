@@ -11,6 +11,40 @@ const captureButton = document.querySelector('#capture-btn');
 const imagePicker = document.querySelector('#image-picker');
 const imagePickerArea = document.querySelector('#pick-image');
 var picture;
+const locationBtn = document.querySelector('#location-btn');
+const locationLoader = document.querySelector('#location-loader');
+var fetchedLocation;
+
+locationBtn.addEventListener('click', e => {
+  if(!('geolocation' in navigator)) {
+    return;
+  }
+
+  locationBtn.style.display = 'none';
+  locationLoader.style.display = 'block';
+
+  navigator.geolocation.getCurrentPosition(position => {
+    locationBtn.style.display = 'inline';
+    locationLoader.style.display = 'none';
+    fetchedLocation = {lat: position.coords.latitude, lng: position.coords.longitude};
+    locationInput.value = 'In Columbia';
+    document.querySelector('#manual-location').classList.add('is-focused');
+  }, err => {
+    console.log(err);
+    locationBtn.style.display = 'inline';
+    locationLoader.style.display = 'none';
+    alert('Could not fetch location, please enter manually.');
+    fetchedLocation = {lat: null, lng: null};
+  }, {
+    timeout: 7000
+  });
+});
+
+function initializeLocation() {
+  if(!('geolocation' in navigator)) {
+    locationBtn.style.display = 'none';
+  }
+}
 
 function initializeMedia() {
   if(!('mediaDevices' in navigator)) {
@@ -61,6 +95,7 @@ imagePicker.addEventListener('change', e => {
 function openCreatePostModal() {
   createPostArea.style.transform = 'translateY(0)';
   initializeMedia();
+  initializeLocation();
   if (deferredPrompt) {
     deferredPrompt.prompt();
 
@@ -93,6 +128,8 @@ function closeCreatePostModal() {
   imagePickerArea.style.display = 'none';
   videoPlayer.style.display = 'none';
   canvasElement.style.display = 'none';
+  locationBtn.style.display = 'inline';
+  locationLoader.style.display = 'none';
 }
 
 shareImageButton.addEventListener('click', openCreatePostModal);
@@ -204,6 +241,8 @@ function sendData() {
   postData.append('id', id);
   postData.append('title', titleInput.value);
   postData.append('location', locationInput.value);
+  postData.append('rawLocationLat', fetchLocation.lat);
+  postData.append('rawLocationLng', fetchLocation.lng);
   postData.append('file', picture, id + '.png');
 
   const url = 'https://us-central1-pwagram-f2499.cloudfunctions.net/storePostData';
@@ -234,7 +273,8 @@ form.addEventListener('submit', (e) => {
           id: new Date().toISOString(),
           title: titleInput.value,
           location: locationInput.value,
-          picture: picture
+          picture: picture,
+          rawLocation: fetchedLocation
         };
         writeData('sync-posts', post)
           .then(() => {
