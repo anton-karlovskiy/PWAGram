@@ -81,10 +81,6 @@ workboxSW.router.registerRoute(
 
 workboxSW.precache([
   {
-    "url": "404.html",
-    "revision": "0a27a4163254fc8fce870c8cc3a3f94f"
-  },
-  {
     "url": "favicon.ico",
     "revision": "2cab47d9e04d664d93c8d91aec59e812"
   },
@@ -155,6 +151,10 @@ workboxSW.precache([
   {
     "url": "src/js/utility.min.js",
     "revision": "87c407f438ff66627dc13dc10f4d4f6b"
+  },
+  {
+    "url": "workbox-sw.prod.v2.1.3.js",
+    "revision": "a9890beda9e5f17e4c68f42324217941"
   }
 ]);
 
