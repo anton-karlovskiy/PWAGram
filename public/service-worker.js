@@ -49,6 +49,36 @@ workboxSW.router.registerRoute(
   }
 );
 
+workboxSW.router.registerRoute(
+  function(routeData) {
+    return (routeData.event.request.headers.get('accept').includes('text/html'));
+  }, 
+  function(args) {
+    return caches.match(args.event.request)
+      .then(function(response) {
+        if (response) {
+          return response;
+        }
+        else {
+          return fetch(args.event.request)
+            .then(function(res) {
+              return caches.open('dynamic')
+                .then(function(cache) {
+                  cache.put(args.event.request.url, res.clone())
+                  return res;
+                })
+            })
+            .catch(function(err) {
+              return caches.match('/offline.html')
+                .then(function(res) {
+                  return res;
+                });
+            });
+        }
+      })
+  }
+);
+
 workboxSW.precache([
   {
     "url": "404.html",
@@ -72,7 +102,7 @@ workboxSW.precache([
   },
   {
     "url": "service-worker.js",
-    "revision": "93f0e6997a621ab894c0073500d52671"
+    "revision": "d16435360b8bf17e3438155695246ef9"
   },
   {
     "url": "src/css/app.css",
@@ -116,7 +146,7 @@ workboxSW.precache([
   },
   {
     "url": "sw-base.js",
-    "revision": "d7a4275b9c46291e80dcdafc3c2fec54"
+    "revision": "cfe830ae49fd81853e6dd9aa63d9de88"
   },
   {
     "url": "sw.js",
